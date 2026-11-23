@@ -14,7 +14,9 @@ $result = $conn->query($sql);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registration Report</title>
+    <link rel="stylesheet" href="report.css">
 </head>
 <body>
 
