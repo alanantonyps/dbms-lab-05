@@ -45,6 +45,7 @@
 
     --spectrum: linear-gradient(90deg, #4285F4 0%, #EA4335 33%, #FBBC05 66%, #34A853 100%);
     --spectrum-135: linear-gradient(135deg, #4285F4 0%, #EA4335 33%, #FBBC05 66%, #34A853 100%);
+    --spectrum-flow: linear-gradient(90deg, #4285F4 0%, #EA4335 25%, #FBBC05 50%, #34A853 75%, #4285F4 100%);
     --spectrum-soft: linear-gradient(90deg, rgba(66,133,244,0.9), rgba(234,67,53,0.9), rgba(251,188,5,0.9), rgba(52,168,83,0.9));
 
     --line: rgba(148, 163, 184, 0.12);
@@ -121,9 +122,10 @@ body::after {
 }
 
 @keyframes orbFloat {
-    0%   { transform: translate(0, 0); opacity: 0.7; }
-    50%  { transform: translate(20px, -15px); opacity: 1; }
-    100% { transform: translate(-15px, 10px); opacity: 0.8; }
+    0%   { transform: translate(0, 0) scale(1);          opacity: 0.6; }
+    33%  { transform: translate(30px, -22px) scale(1.15); opacity: 1; }
+    66%  { transform: translate(-22px, 16px) scale(0.95); opacity: 0.75; }
+    100% { transform: translate(16px, -10px) scale(1.1);  opacity: 0.95; }
 }
 
 /* Subtle grid texture layer */
@@ -137,10 +139,10 @@ body::after {
     border: 1px solid var(--line-strong);
     border-radius: var(--r-xl);
     padding: 40px 44px 36px;
-    box-shadow: var(--shadow-xl);
+    box-shadow: var(--shadow-xl), 0 0 80px -30px rgba(66, 133, 244, 0.4);
     position: relative;
     overflow: hidden;
-    animation: containerIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: containerIn 0.5s cubic-bezier(0.16, 1, 0.3, 1), containerGlow 12s ease-in-out 0.5s infinite alternate;
 }
 
 /* Grid texture overlay */
@@ -166,9 +168,13 @@ body::after {
     left: 0;
     right: 0;
     height: 3px;
-    background: var(--spectrum);
+    background: var(--spectrum-flow);
+    background-size: 200% 100%;
+    background-repeat: repeat-x;
     opacity: 0.95;
     z-index: 2;
+    box-shadow: 0 2px 16px rgba(66, 133, 244, 0.55), 0 2px 26px rgba(234, 67, 53, 0.25);
+    animation: spectrumFlow 9s linear infinite;
 }
 
 @keyframes containerIn {
@@ -212,6 +218,7 @@ h2::before {
     background-position: center;
     background-size: 20px 20px, 100% 100%;
     box-shadow: 0 4px 16px rgba(66, 133, 244, 0.35), 0 2px 8px rgba(234, 67, 53, 0.2);
+    animation: iconFloat 4s ease-in-out infinite, iconGlow 3s ease-in-out infinite;
 }
 
 h2::after {
@@ -314,7 +321,7 @@ h3::before {
     white-space: nowrap;
     margin: 0;
     overflow: hidden;
-    animation: btnGradient 6s ease infinite;
+    animation: btnGradient 6s ease infinite, glowBreath 3.4s ease-in-out infinite;
 }
 
 @keyframes btnGradient {
@@ -386,7 +393,7 @@ form {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     overflow: hidden;
-    animation: sectionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: sectionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 @keyframes sectionIn {
@@ -619,7 +626,7 @@ button[type="submit"] {
     justify-content: center;
     gap: 8px;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
-    animation: gradientShift 8s ease infinite;
+    animation: gradientShift 8s ease infinite, glowBreath 3.4s ease-in-out 0.8s infinite;
 }
 
 @keyframes gradientShift {
@@ -759,6 +766,158 @@ button[type="submit"]:focus-visible {
     background-position: center;
     background-size: contain;
 }
+
+/* ============================================
+   MOTION & GLOW LAYER
+   ============================================ */
+
+/* Rotating "comet" border needs a typed custom property */
+@property --angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+@keyframes spinAngle    { to { --angle: 360deg; } }
+@keyframes spectrumFlow { to { background-position: 200% 0; } }
+
+@keyframes glowBreath {
+    0%, 100% { filter: drop-shadow(0 0 0 rgba(66, 133, 244, 0)); }
+    50%      { filter: drop-shadow(0 0 12px rgba(66, 133, 244, 0.5)); }
+}
+
+@keyframes idleShimmer {
+    0%        { left: -100%; }
+    35%, 100% { left: 100%; }
+}
+
+@keyframes fieldIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes dotPulse {
+    0%, 100% { transform: scale(1);   opacity: 1; }
+    50%      { transform: scale(1.6); opacity: 0.55; }
+}
+
+@keyframes iconFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-3px); }
+}
+
+@keyframes iconGlow {
+    0%, 100% { box-shadow: 0 4px 16px rgba(66, 133, 244, 0.35), 0 2px 8px rgba(234, 67, 53, 0.2); }
+    50%      { box-shadow: 0 6px 28px rgba(66, 133, 244, 0.65), 0 2px 18px rgba(234, 67, 53, 0.4); }
+}
+
+@keyframes containerGlow {
+    0%   { box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 80px -30px rgba(66, 133, 244, 0.4); }
+    50%  { box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 90px -28px rgba(234, 67, 53, 0.3); }
+    100% { box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 90px -28px rgba(52, 168, 83, 0.38); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+@keyframes successGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(52, 168, 83, 0); }
+    50%      { box-shadow: 0 0 26px -2px rgba(52, 168, 83, 0.45); }
+}
+
+@keyframes errorGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(234, 67, 53, 0); }
+    50%      { box-shadow: 0 0 26px -2px rgba(234, 67, 53, 0.45); }
+}
+
+/* Hero icon + pill */
+h2::after { animation: fieldIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s backwards; }
+
+/* Step number badges pop on hover / focus */
+h3::before { transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.form-section:hover h3::before,
+.form-section:focus-within h3::before { transform: scale(1.14) rotate(-6deg); }
+
+/* h3 underline: flowing spectrum that grows when the section is active */
+h3::after {
+    background: var(--spectrum-flow);
+    background-size: 200% 100%;
+    background-repeat: repeat-x;
+    animation: spectrumFlow 6s linear infinite;
+    transition: width 0.55s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+.form-section:hover h3::after,
+.form-section:focus-within h3::after { width: 150px; opacity: 1; }
+
+/* Section "comet" border: a bright arc circles the box on hover / focus */
+.form-section:nth-of-type(1) { --c: #6ba3ff; }
+.form-section:nth-of-type(2) { --c: #5cc777; }
+.form-section:nth-of-type(3) { --c: #ffd23f; }
+
+.form-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: conic-gradient(from var(--angle), transparent 0deg 190deg, var(--c) 320deg, #ffffff 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+    transition: opacity 0.35s ease;
+    animation: spinAngle 4.5s linear infinite paused;
+}
+.form-section:hover::after { opacity: 0.5; animation-play-state: running; }
+.form-section:focus-within::after { opacity: 1; animation-play-state: running; }
+
+/* Pulsing "OR" dot */
+.sub-label::before { animation: dotPulse 2s ease-in-out infinite; }
+
+/* Fields: staggered entrance, label lights up while typing */
+.field-group { animation: fieldIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards; }
+.form-section .field-group:nth-of-type(1) { animation-delay: 0.22s; }
+.form-section .field-group:nth-of-type(2) { animation-delay: 0.28s; }
+.form-section .field-group:nth-of-type(3) { animation-delay: 0.34s; }
+.form-section .field-group:nth-of-type(4) { animation-delay: 0.40s; }
+
+.field-label { transition: color 0.2s ease, transform 0.2s ease; }
+.field-group:focus-within .field-label { color: var(--g-blue-light); transform: translateX(3px); }
+.form-section:nth-of-type(2) .field-group:focus-within .field-label { color: var(--g-green-light); }
+.form-section:nth-of-type(3) .field-group:focus-within .field-label { color: var(--g-yellow-light); }
+
+/* Input glow on focus (outer bloom added to the existing ring) */
+input[type="text"]:focus,
+input[type="date"]:focus,
+select:focus {
+    box-shadow: 0 0 0 3px var(--g-blue-ring), 0 0 26px rgba(66, 133, 244, 0.35), inset 0 0 12px rgba(66, 133, 244, 0.08);
+}
+.form-section:nth-of-type(2) input:focus,
+.form-section:nth-of-type(2) select:focus {
+    box-shadow: 0 0 0 3px var(--g-green-ring), 0 0 26px rgba(52, 168, 83, 0.35), inset 0 0 12px rgba(52, 168, 83, 0.08);
+}
+.form-section:nth-of-type(3) input:focus {
+    box-shadow: 0 0 0 3px var(--g-yellow-ring), 0 0 26px rgba(251, 188, 5, 0.35), inset 0 0 12px rgba(251, 188, 5, 0.08);
+}
+
+/* Idle shimmer sweeps across both gradient buttons */
+.report-link::before,
+button[type="submit"]::before {
+    animation: idleShimmer 6s ease-in-out 2.5s infinite;
+}
+
+/* Messages: success glows, error shakes */
+.msg-success { animation: msgIn 0.3s cubic-bezier(0.16, 1, 0.3, 1), successGlow 2.4s ease-in-out 0.3s 2; }
+.msg-error   { animation: msgIn 0.3s cubic-bezier(0.16, 1, 0.3, 1), shake 0.5s ease 0.3s, errorGlow 2.4s ease-in-out 0.3s 2; }
+
+/* Note fades in last */
+.note { animation: fieldIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.5s backwards; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
